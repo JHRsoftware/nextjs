@@ -1,35 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Submit & View Data</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Submit & View Data</title>
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 20px;
+    background: #f5f7fa;
+    color: #333;
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #222;
+  }
+
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 0.05);
+  }
+
+  form input[type="text"] {
+    flex: 1 1 200px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s ease;
+  }
+  form input[type="text"]:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+
+  form button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  form button:hover {
+    background-color: #357ABD;
+  }
+
+  #status {
+    font-weight: 600;
+    margin-bottom: 10px;
+    min-height: 20px;
+  }
+
+  .search-container {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .search-container input {
+    flex: 1 1 300px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+  .search-container input:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+  .search-container button {
+    background-color: #d9534f;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .search-container button:hover {
+    background-color: #c9302c;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
+  }
+  thead {
+    background-color: #4a90e2;
+    color: white;
+  }
+  th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  tbody tr:hover {
+    background-color: #f1f8ff;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4a90e2;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    form {
+      flex-direction: column;
     }
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-      padding: 8px;
+    .search-container {
+      flex-direction: column;
     }
-    table {
+    form input, .search-container input, form button, .search-container button {
       width: 100%;
-      margin-top: 20px;
+      flex: none;
     }
-  </style>
+    th, td {
+      font-size: 0.9rem;
+      padding: 10px 8px;
+    }
+  }
+</style>
 </head>
 <body>
+
   <h2>Submit Name & Address</h2>
   <form id="form">
-    <input type="text" id="name" placeholder="Name" required />
-    <input type="text" id="address" placeholder="Address" required />
+    <input type="text" id="name" placeholder="Name" required autocomplete="off" />
+    <input type="text" id="address" placeholder="Address" required autocomplete="off" />
     <button type="submit">Submit</button>
   </form>
+
   <p id="status"></p>
 
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search by Name or Address..." />
+    <button id="clearSearch">Clear</button>
+  </div>
+
   <h2>Submitted Data</h2>
-  <table id="dataTable">
+  <table id="dataTable" aria-live="polite" aria-label="Submitted Data Table">
     <thead>
       <tr>
         <th>Name</th>
@@ -40,52 +183,121 @@
     <tbody></tbody>
   </table>
 
-  <script>
-    const form = document.getElementById("form");
-    const status = document.getElementById("status");
-    const tableBody = document.querySelector("#dataTable tbody");
+<script>
+  const form = document.getElementById("form");
+  const status = document.getElementById("status");
+  const tableBody = document.querySelector("#dataTable tbody");
+  const searchInput = document.getElementById("searchInput");
+  const clearSearchBtn = document.getElementById("clearSearch");
 
-    const baseURL = "https://script.google.com/macros/s/AKfycbzH5MCkUY2BvJ5LTskpArSfAfGQg9YYwn3Kpdagh07F9l0uVBVFyUVXBHbtPtbgqw/exec";
+  const baseURL = "https://script.google.com/macros/s/AKfycbzH5MCkUY2BvJ5LTskpArSfAfGQg9YYwn3Kpdagh07F9l0uVBVFyUVXBHbtPtbgqw/exec";
 
-    // Submit data
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const address = document.getElementById("address").value.trim();
+  // Format timestamp to readable format
+  function formatTimestamp(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    if (isNaN(d)) return ts; // fallback if invalid date
+    return d.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  }
 
-      const url = `${baseURL}?name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}`;
-      fetch(url)
-        .then(res => res.text())
-        .then(response => {
-          status.textContent = "Submitted successfully!";
-          form.reset();
-          loadData(); // Reload data table
-        })
-        .catch(err => {
-          console.error("Submit Error:", err);
-          status.textContent = "Error submitting data.";
-        });
-    });
+  // Show status with optional loading spinner
+  function showStatus(message, loading = false, isError = false) {
+    status.textContent = message;
+    status.style.color = isError ? "#d9534f" : "#28a745";
+    if (loading) {
+      status.innerHTML += ' <span class="spinner"></span>';
+    }
+  }
 
-    // Load data to table
-    function loadData() {
-      fetch(baseURL)
-        .then(res => res.json())
-        .then(data => {
-          tableBody.innerHTML = "";
-          data.forEach(row => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${row.name}</td><td>${row.address}</td><td>${row.timestamp}</td>`;
-            tableBody.appendChild(tr);
-          });
-        })
-        .catch(err => {
-          console.error("Load Error:", err);
-        });
+  // Clear status
+  function clearStatus() {
+    status.textContent = "";
+  }
+
+  // Submit data handler
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const address = document.getElementById("address").value.trim();
+    if (!name || !address) {
+      showStatus("Please fill in all fields.", false, true);
+      return;
     }
 
-    // Load data on page load
-    window.onload = loadData;
-  </script>
+    showStatus("Submitting...", true);
+
+    const url = `${baseURL}?name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}`;
+    fetch(url)
+      .then(res => res.text())
+      .then(response => {
+        showStatus("Submitted successfully!");
+        form.reset();
+        loadData();
+      })
+      .catch(err => {
+        console.error("Submit Error:", err);
+        showStatus("Error submitting data.", false, true);
+      });
+  });
+
+  // Load data from server and populate table
+  let allData = [];
+  function loadData() {
+    showStatus("Loading data...", true);
+    fetch(baseURL)
+      .then(res => res.json())
+      .then(data => {
+        allData = data;
+        populateTable(data);
+        clearStatus();
+      })
+      .catch(err => {
+        console.error("Load Error:", err);
+        showStatus("Error loading data.", false, true);
+      });
+  }
+
+  // Populate table rows
+  function populateTable(data) {
+    tableBody.innerHTML = "";
+    if (!data.length) {
+      tableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 15px; color:#666;">No data found</td></tr>`;
+      return;
+    }
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.name}</td>
+        <td>${row.address}</td>
+        <td>${formatTimestamp(row.timestamp)}</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // Search/filter functionality
+  searchInput.addEventListener("input", function() {
+    const query = this.value.trim().toLowerCase();
+    if (!query) {
+      populateTable(allData);
+      return;
+    }
+    const filtered = allData.filter(row =>
+      row.name.toLowerCase().includes(query) || row.address.toLowerCase().includes(query)
+    );
+    populateTable(filtered);
+  });
+
+  // Clear search button
+  clearSearchBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    populateTable(allData);
+    clearStatus();
+  });
+
+  // Initial data load
+  window.onload = loadData;
+</script>
+
 </body>
 </html>

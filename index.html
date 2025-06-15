@@ -1,187 +1,302 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Submit & View Data</title>
-<style>
-  /* Reset */
-  * {
-    box-sizing: border-box;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit & View Data</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
 
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0; padding: 20px;
-    background: #f5f7fa;
-    color: #333;
-  }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      color: #222;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-  h2 {
-    margin-bottom: 15px;
-    color: #222;
-  }
+    /* Sticky top header */
+    header {
+      position: sticky;
+      top: 0;
+      background: #4a90e2;
+      color: white;
+      padding: 16px 20px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      z-index: 100;
+      user-select: none;
+    }
 
-  form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgb(0 0 0 / 0.05);
-  }
+    main {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-  form input[type="text"] {
-    flex: 1 1 200px;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: 1.5px solid #ccc;
-    border-radius: 6px;
-    transition: border-color 0.3s ease;
-  }
-  form input[type="text"]:focus {
-    border-color: #4a90e2;
-    outline: none;
-  }
+    h2 {
+      margin: 0 0 15px 0;
+      color: #222;
+      font-weight: 600;
+    }
 
-  form button {
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  form button:hover {
-    background-color: #357ABD;
-  }
-
-  #status {
-    font-weight: 600;
-    margin-bottom: 10px;
-    min-height: 20px;
-  }
-
-  .search-container {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .search-container input {
-    flex: 1 1 300px;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border-radius: 6px;
-    border: 1.5px solid #ccc;
-    transition: border-color 0.3s ease;
-  }
-  .search-container input:focus {
-    border-color: #4a90e2;
-    outline: none;
-  }
-  .search-container button {
-    background-color: #d9534f;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  .search-container button:hover {
-    background-color: #c9302c;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
-  }
-  thead {
-    background-color: #4a90e2;
-    color: white;
-  }
-  th, td {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    text-align: left;
-    font-size: 0.95rem;
-  }
-  tbody tr:hover {
-    background-color: #f1f8ff;
-  }
-
-  /* Loading spinner */
-  .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #4a90e2;
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    animation: spin 1s linear infinite;
-    display: inline-block;
-    vertical-align: middle;
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg);}
-    100% { transform: rotate(360deg);}
-  }
-
-  /* Responsive */
-  @media (max-width: 600px) {
+    /* Form styles */
     form {
-      flex-direction: column;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.07);
+      align-items: center;
     }
+
+    form input[type="text"] {
+      flex: 1 1 200px;
+      padding: 14px 18px;
+      font-size: 1.1rem;
+      border: 1.8px solid #ccc;
+      border-radius: 10px;
+      transition: border-color 0.3s ease;
+      min-width: 0; /* prevents overflow in flex */
+    }
+    form input[type="text"]:focus {
+      border-color: #2a6ad1;
+      outline: none;
+      box-shadow: 0 0 5px #2a6ad1aa;
+    }
+
+    form button {
+      background-color: #2a6ad1;
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.1s ease;
+      flex-shrink: 0;
+      box-shadow: 0 4px 9px rgba(42, 106, 209, 0.3);
+      user-select: none;
+    }
+    form button:hover {
+      background-color: #245aa0;
+    }
+    form button:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(36, 90, 160, 0.5);
+    }
+
+    #status {
+      font-weight: 600;
+      margin-top: 5px;
+      min-height: 24px;
+      font-size: 1rem;
+      color: #28a745;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Spinner style */
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #2a6ad1;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
+    /* Search bar */
     .search-container {
-      flex-direction: column;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #fff;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.07);
+      align-items: center;
     }
-    form input, .search-container input, form button, .search-container button {
+
+    .search-container input {
+      flex: 1 1 300px;
+      padding: 14px 18px;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 1.8px solid #ccc;
+      transition: border-color 0.3s ease;
+      min-width: 0;
+    }
+    .search-container input:focus {
+      border-color: #2a6ad1;
+      outline: none;
+      box-shadow: 0 0 5px #2a6ad1aa;
+    }
+    .search-container button {
+      background-color: #d9534f;
+      border: none;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      flex-shrink: 0;
+      user-select: none;
+      box-shadow: 0 4px 9px rgba(217, 83, 79, 0.3);
+    }
+    .search-container button:hover {
+      background-color: #c9302c;
+    }
+    .search-container button:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(201, 48, 44, 0.5);
+    }
+
+    /* Data table */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
+      background: white;
+    }
+    table {
       width: 100%;
-      flex: none;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 320px;
+    }
+    thead tr {
+      background-color: #2a6ad1;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      user-select: none;
     }
     th, td {
-      font-size: 0.9rem;
-      padding: 10px 8px;
+      padding: 14px 20px;
+      border-bottom: 1px solid #ddd;
+      font-size: 1rem;
+      text-align: left;
+      white-space: nowrap;
     }
-  }
-</style>
+    tbody tr:hover {
+      background-color: #f1f8ff;
+    }
+
+    tbody tr td:first-child {
+      font-weight: 600;
+      color: #444;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      form {
+        flex-direction: column;
+        padding: 15px;
+      }
+      form input[type="text"], form button {
+        width: 100%;
+        flex: none;
+      }
+      .search-container {
+        flex-direction: column;
+        padding: 15px;
+      }
+      .search-container input, .search-container button {
+        width: 100%;
+        flex: none;
+      }
+      th, td {
+        padding: 12px 10px;
+        font-size: 0.95rem;
+      }
+      #status {
+        font-size: 0.95rem;
+      }
+    }
+
+    /* Footer */
+    footer {
+      background: #4a90e2;
+      color: white;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
 
-  <h2>Submit Name & Address</h2>
-  <form id="form">
-    <input type="text" id="name" placeholder="Name" required autocomplete="off" />
-    <input type="text" id="address" placeholder="Address" required autocomplete="off" />
-    <button type="submit">Submit</button>
-  </form>
+<header>Submit & View Data</header>
 
-  <p id="status"></p>
+<main>
+  <section>
+    <h2>Submit Name & Address</h2>
+    <form id="form" autocomplete="off" novalidate>
+      <input type="text" id="name" name="name" placeholder="Name" required />
+      <input type="text" id="address" name="address" placeholder="Address" required />
+      <button type="submit" aria-label="Submit name and address">Submit</button>
+    </form>
+    <p id="status" aria-live="polite" role="status"></p>
+  </section>
 
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search by Name or Address..." />
-    <button id="clearSearch">Clear</button>
-  </div>
+  <section>
+    <div class="search-container">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by Name or Address..."
+        aria-label="Search submitted data"
+      />
+      <button id="clearSearch" aria-label="Clear search">Clear</button>
+    </div>
+  </section>
 
-  <h2>Submitted Data</h2>
-  <table id="dataTable" aria-live="polite" aria-label="Submitted Data Table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Timestamp</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <section>
+    <h2>Submitted Data</h2>
+    <div class="table-wrapper" role="region" aria-live="polite" aria-label="Submitted data table">
+      <table id="dataTable" >
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Timestamp</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>App version 1.0 &copy; 2025</footer>
 
 <script>
   const form = document.getElementById("form");
@@ -205,7 +320,7 @@
     status.textContent = message;
     status.style.color = isError ? "#d9534f" : "#28a745";
     if (loading) {
-      status.innerHTML += ' <span class="spinner"></span>';
+      status.innerHTML += ' <span class="spinner" aria-hidden="true"></span>';
     }
   }
 
@@ -217,8 +332,8 @@
   // Submit data handler
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    const name = document.getElementById("name").value.trim();
-    const address = document.getElementById("address").value.trim();
+    const name = form.name.value.trim();
+    const address = form.address.value.trim();
     if (!name || !address) {
       showStatus("Please fill in all fields.", false, true);
       return;
@@ -276,7 +391,7 @@
   }
 
   // Search/filter functionality
-  searchInput.addEventListener("input", function() {
+  searchInput.addEventListener("input", function () {
     const query = this.value.trim().toLowerCase();
     if (!query) {
       populateTable(allData);

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Submit & View Data</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Submit Name & Address</h2>
+  <form id="form">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="address" placeholder="Address" required />
+    <button type="submit">Submit</button>
+  </form>
+  <p id="status"></p>
+
+  <h2>Submitted Data</h2>
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("form");
+    const status = document.getElementById("status");
+    const tableBody = document.querySelector("#dataTable tbody");
+
+    const baseURL = "https://script.google.com/macros/s/AKfycbzH5MCkUY2BvJ5LTskpArSfAfGQg9YYwn3Kpdagh07F9l0uVBVFyUVXBHbtPtbgqw/exec";
+
+    // Submit data
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const address = document.getElementById("address").value.trim();
+
+      const url = `${baseURL}?name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}`;
+      fetch(url)
+        .then(res => res.text())
+        .then(response => {
+          status.textContent = "Submitted successfully!";
+          form.reset();
+          loadData(); // Reload data table
+        })
+        .catch(err => {
+          console.error("Submit Error:", err);
+          status.textContent = "Error submitting data.";
+        });
+    });
+
+    // Load data to table
+    function loadData() {
+      fetch(baseURL)
+        .then(res => res.json())
+        .then(data => {
+          tableBody.innerHTML = "";
+          data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${row.name}</td><td>${row.address}</td><td>${row.timestamp}</td>`;
+            tableBody.appendChild(tr);
+          });
+        })
+        .catch(err => {
+          console.error("Load Error:", err);
+        });
+    }
+
+    // Load data on page load
+    window.onload = loadData;
+  </script>
+</body>
+</html>
